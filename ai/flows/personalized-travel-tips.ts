@@ -63,10 +63,15 @@ const personalizedTravelTipsFlow = ai.defineFlow(
   },
   async input => {
     const llmResponse = await prompt(input);
-    const output = llmResponse ? llmResponse.output() : null;
-
+    if (!llmResponse) {
+        console.error("No response received from the model");
+        throw new Error('The AI model did not return a response. Please try again.');
+    }
+    
+    const output = llmResponse.output();
+    
     if (!output) {
-        console.error("Failed to get structured output from the model. Response text:", llmResponse.text());
+        console.error("Failed to get structured output from the model. Response text:", llmResponse.text?.() || 'No text available');
         throw new Error(
           'The AI model returned an unexpected response. Please try again.'
         );
