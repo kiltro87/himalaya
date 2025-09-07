@@ -63,7 +63,7 @@ const personalizedTravelTipsFlow = ai.defineFlow(
   },
   async input => {
     const llmResponse = await prompt(input);
-    const output = llmResponse.output();
+    const output = llmResponse ? llmResponse.output() : null;
 
     if (!output) {
         console.error("Failed to get structured output from the model. Response text:", llmResponse.text());
