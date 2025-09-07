@@ -1,4 +1,3 @@
-
 "use client"
 
 import { tripConfig } from "@/lib/trip-config";
@@ -7,6 +6,12 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { useState } from "react";
+
+// Helper function to format dates with Spanish locale
+const formatDate = (date: string | Date) => {
+  // For date-fns v3.6.0, we need to pass the locale as part of the options object
+  return format(new Date(date), 'PPP', { locale: es } as any);
+};
 
 export function AccommodationsView() {
   const { accommodations } = tripConfig;
@@ -43,11 +48,11 @@ export function AccommodationsView() {
                 <div key={res.id} className="w-full rounded-lg border bg-muted/50 p-3 text-sm">
                     <div className="flex justify-between">
                         <span className="font-semibold">Check-in:</span>
-                        <span>{format(new Date(res.checkIn), "PPP", { locale: es })}</span>
+                        <span>{formatDate(res.checkIn)}</span>
                     </div>
                     <div className="flex justify-between">
                         <span className="font-semibold">Check-out:</span>
-                        <span>{format(new Date(res.checkOut), "PPP", { locale: es })}</span>
+                        <span>{formatDate(res.checkOut)}</span>
                     </div>
                      <div className="mt-2 flex justify-between border-t pt-2">
                         <span className="font-semibold">Confirmación:</span>

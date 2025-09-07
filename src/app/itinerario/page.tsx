@@ -11,8 +11,9 @@ import { List, Calendar, ChevronRight, Thermometer, WifiOff, MapPin } from "luci
 import { ItineraryDetailModal } from "@/components/views/itinerary-detail-modal";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
-import { format, parseISO } from "date-fns";
-import { es } from "date-fns/locale";
+import { format } from "date-fns/format";
+import { parseISO } from "date-fns/parseISO";
+import { es } from "date-fns/locale/es";
 import { fetchWeather } from "@/app/actions";
 import { Skeleton } from "@/components/ui/skeleton";
 

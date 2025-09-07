@@ -12,11 +12,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Coins, Package } from "lucide-react";
 import dynamic from "next/dynamic";
 import { Skeleton } from "../ui/skeleton";
-
-const DistributionChart = dynamic(() => import('@/components/views/distribution-chart').then(mod => mod.DistributionChart), {
-  loading: () => <Skeleton className="h-[300px] w-full" />,
-  ssr: false
-});
+import { DistributionChart } from "@/components/views/distribution-chart";
 
 const BudgetView = dynamic(() => import('@/components/views/budget-view').then(mod => mod.BudgetView), {
   loading: () => <Skeleton className="h-40 w-full" />,

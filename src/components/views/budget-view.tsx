@@ -10,8 +10,8 @@ import { Button } from "@/components/ui/button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Plane, Utensils, Hotel, ShoppingBag, Clapperboard, Wallet, PlusCircle, Pencil, Trash2, CheckCircle, Ticket, Handshake } from "lucide-react";
 import { ExpenseForm } from "./expense-form";
-import { format } from "date-fns";
-import { es } from "date-fns/locale";
+import { format } from "date-fns/format";
+import { es } from "date-fns/locale/es";
 import * as budgetService from "@/services/budget-service";
 import { v4 as uuidv4 } from "uuid";
 

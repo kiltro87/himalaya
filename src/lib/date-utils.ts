@@ -1,6 +1,9 @@
 
 import { tripConfig } from "@/lib/trip-config";
-import { differenceInCalendarDays, parseISO, isBefore, isAfter } from "date-fns";
+import { differenceInCalendarDays } from "date-fns/differenceInCalendarDays";
+import { parseISO } from "date-fns/parseISO";
+import { isBefore } from "date-fns/isBefore";
+import { isAfter } from "date-fns/isAfter";
 
 /**
  * Calculates the current day number of the trip.
