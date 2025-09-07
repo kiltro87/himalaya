@@ -1,0 +1,31 @@
+# Netlify configuration file for a Next.js app with Genkit.
+# https://docs.netlify.com/configure-builds/file-based-configuration/
+
+[build]
+  # This command will be run to build the site.
+  command = "npm run build"
+  
+  # This directory contains the deployment-ready public files.
+  publish = ".next"
+
+  # The functions directory for Next.js server-side logic.
+  functions = ".next/functions"
+
+[build.environment]
+  # Set the Node.js version.
+  # Use a version compatible with your project's dependencies.
+  NODE_VERSION = "20"
+
+[[plugins]]
+  # Essential plugin for Next.js on Netlify.
+  # It handles server-side rendering, image optimization, etc.
+  package = "@netlify/plugin-nextjs"
+
+# IMPORTANT:
+# You must set your environment variables (API keys) in the Netlify UI.
+# Go to your site's settings: Site configuration > Build & deploy > Environment > Environment variables.
+# You need to add the following variables:
+#
+# GEMINI_API_KEY                  (Your Google AI API key)
+# NEXT_PUBLIC_MAPBOX_API_KEY        (Your Mapbox public token)
+# NEXT_PUBLIC_OPENWEATHERMAP_API_KEY (Your OpenWeatherMap API key)
