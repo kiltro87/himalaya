@@ -1,3 +1,4 @@
+
 # Netlify configuration file for a Next.js app with Genkit.
 # https://docs.netlify.com/configure-builds/file-based-configuration/
 
@@ -10,11 +11,6 @@
 
   # The functions directory for Next.js server-side logic.
   functions = ".next/functions"
-
-[build.environment]
-  # Set the Node.js version.
-  # Use a version compatible with your project's dependencies.
-  NODE_VERSION = "20"
 
 [[plugins]]
   # Essential plugin for Next.js on Netlify.
@@ -29,3 +25,5 @@
 # GEMINI_API_KEY                  (Your Google AI API key)
 # NEXT_PUBLIC_MAPBOX_API_KEY        (Your Mapbox public token)
 # NEXT_PUBLIC_OPENWEATHERMAP_API_KEY (Your OpenWeatherMap API key)
+
+

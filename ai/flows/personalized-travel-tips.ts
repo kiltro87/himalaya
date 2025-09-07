@@ -33,7 +33,6 @@ const prompt = ai.definePrompt({
   name: 'personalizedTravelTipsPrompt',
   input: {schema: PersonalizedTravelTipsInputSchema},
   output: {
-    format: 'json',
     schema: PersonalizedTravelTipsOutputSchema,
   },
   prompt: `You are an expert travel assistant for the Himalayas. Your goal is to provide concise, practical, and inspiring advice.
