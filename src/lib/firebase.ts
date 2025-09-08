@@ -2,18 +2,23 @@
 import { initializeApp, getApps, getApp, FirebaseOptions } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 
-// Your web app's Firebase configuration
 const firebaseConfig: FirebaseOptions = {
-  apiKey: "AIzaSyBNEzeYTeaLkrMxQhMh-08RwxmTFOPc32s",
-  authDomain: "viaje-himalaya.firebaseapp.com",
-  projectId: "viaje-himalaya",
-  storageBucket: "viaje-himalaya.firebasestorage.app",
-  messagingSenderId: "89001303026",
-  appId: "1:89001303026:web:93e11085df1213a865296b"
+  apiKey: "AIzaSyAnhCzmmVs3cvURiEDvH9RoLDb2hr4AZhA",
+  authDomain: "nepal-v2.firebaseapp.com",
+  projectId: "nepal-v2",
+  storageBucket: "nepal-v2.appspot.com",
+  messagingSenderId: "724157932457",
+  appId: "1:724157932457:web:873d92b8dbc656d3655ab8"
 };
 
 // Initialize Firebase
-const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
-const db = getFirestore(app);
+let app;
+if (getApps().length === 0) {
+  app = initializeApp(firebaseConfig);
+} else {
+  app = getApp();
+}
+
+const db = getFirestore(app, "viaje");
 
 export { db };

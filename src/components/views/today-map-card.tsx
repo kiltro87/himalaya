@@ -16,13 +16,14 @@ const MapClientMini = dynamic(
 
 interface TodayMapCardProps {
     currentDay: ItineraryDay;
+    mapboxApiKey: string;
 }
 
-export function TodayMapCard({ currentDay }: TodayMapCardProps) {
+export function TodayMapCard({ currentDay, mapboxApiKey }: TodayMapCardProps) {
   return (
     <Card className="h-full overflow-hidden">
         <CardContent className="p-0 h-full">
-            <MapClientMini currentDay={currentDay} />
+            <MapClientMini currentDay={currentDay} mapboxApiKey={mapboxApiKey} />
         </CardContent>
     </Card>
   );

@@ -6,25 +6,29 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { SlidersHorizontal } from 'lucide-react';
-import { tripConfig } from '@/lib/trip-config';
+// Import types and data from their correct sources
+import { tripConfig, TRIP_ITINERARY } from '@/lib/trip-config'; // CORRECT: Import data directly
 import { getTripDay } from '@/lib/date-utils';
+import { useTripContext } from '@/app/trip-context'; 
 
-
-interface DaySimulatorProps {
-  currentDay: number;
-  onDayChange: (day: number) => void;
-}
-
-export function DaySimulator({ currentDay, onDayChange }: DaySimulatorProps) {
+export function DaySimulator() {
   const [isOpen, setIsOpen] = useState(false);
+  const { currentDay, setCurrentDay } = useTripContext(); 
 
   const handleDaySelect = (value: string) => {
-    const day = parseInt(value, 10);
-    onDayChange(day);
+    const dayNumber = parseInt(value, 10);
+    const newDay = TRIP_ITINERARY.find(d => d.day === dayNumber);
+    if (newDay) {
+      setCurrentDay(newDay);
+    }
   };
   
   const handleReset = () => {
-    onDayChange(getTripDay()); // Reset to the actual current day
+    const actualDayNumber = getTripDay();
+    const actualDay = TRIP_ITINERARY.find(d => d.day === actualDayNumber);
+    if (actualDay) {
+        setCurrentDay(actualDay);
+    }
     setIsOpen(false);
   }
 
@@ -41,7 +45,7 @@ export function DaySimulator({ currentDay, onDayChange }: DaySimulatorProps) {
         </SheetHeader>
         <div className="mt-8 grid gap-6">
             <p className="text-muted-foreground">Select a day to simulate the "Today" view.</p>
-            <Select onValueChange={handleDaySelect} defaultValue={String(currentDay)}>
+            <Select onValueChange={handleDaySelect} defaultValue={String(currentDay.day)}>
                 <SelectTrigger>
                     <SelectValue placeholder="Select a day" />
                 </SelectTrigger>

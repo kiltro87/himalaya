@@ -1,15 +1,10 @@
 
 'use server';
-/**
- * @fileOverview Provides weather information for a given location.
- *
- * - getWeatherInfo - A function that fetches weather data.
- * - WeatherInfoOutput - The return type for the getWeatherInfo function.
- */
 
-import { ai } from '@/ai/genkit';
-import { z } from 'genkit';
+import { z } from 'zod';
 import axios from 'axios';
+import { doc, getDoc } from "firebase/firestore";
+import { db } from '@/lib/firebase';
 
 const WeatherInfoOutputSchema = z.object({
   location: z.string().describe('The name of the location.'),
@@ -24,31 +19,39 @@ const WeatherInfoOutputSchema = z.object({
 });
 export type WeatherInfoOutput = z.infer<typeof WeatherInfoOutputSchema>;
 
-export async function getWeatherInfo(location: string): Promise<WeatherInfoOutput> {
-  return weatherApiTool(location);
+async function getApiKey(): Promise<string> {
+    const docRef = doc(db, "secrets", "apiKeys");
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+        const data = docSnap.data();
+        // The key in Firestore is named openWeatherMap
+        const apiKey = data.openWeatherMap; 
+        if (typeof apiKey === 'string' && apiKey.length > 0) {
+            return apiKey;
+        } else {
+            throw new Error('openWeatherMap API key is missing or invalid in Firestore.');
+        }
+    } else {
+        throw new Error('API keys document not found in Firestore.');
+    }
 }
 
-const weatherApiTool = ai.defineTool(
-  {
-    name: 'weatherApiTool',
-    description: 'Fetches real-time weather data for a specified city from the OpenWeatherMap API.',
-    inputSchema: z.string(),
-    outputSchema: WeatherInfoOutputSchema,
-  },
-  async (city) => {
-    const apiKey = process.env.NEXT_PUBLIC_OPENWEATHERMAP_API_KEY;
-    if (!apiKey || apiKey === "YOUR_API_KEY") {
-      console.error('OpenWeatherMap API key is not configured.');
-      throw new Error('OpenWeatherMap API key is not configured.');
+// This is now a regular async function, completely decoupled from Genkit AI.
+export async function getWeatherInfo(location: string): Promise<WeatherInfoOutput> {
+    let apiKey;
+    try {
+      apiKey = await getApiKey();
+    } catch (error: any) {      
+      console.error(error.message);
+      throw new Error(error.message);
     }
-    const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric&lang=es`;
+
+    const url = `https://api.openweathermap.org/data/2.5/weather?q=${location}&appid=${apiKey}&units=metric&lang=es`;
     
     try {
       const response = await axios.get(url);
       const data = response.data;
-
-      // Log the entire response for debugging
-      // console.log('OpenWeatherMap API Response:', JSON.stringify(data, null, 2));
 
       const iconMap: { [key: string]: string } = {
         '01d': '☀️', '01n': '🌙',
@@ -67,7 +70,7 @@ const weatherApiTool = ai.defineTool(
         return date.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', timeZone: 'UTC' });
       }
 
-      return {
+      const validatedData = WeatherInfoOutputSchema.parse({
         temperature: data.main.temp,
         description: data.weather[0].description,
         icon: iconMap[data.weather[0].icon] || '🌡️',
@@ -77,18 +80,24 @@ const weatherApiTool = ai.defineTool(
         windSpeed: Math.round(data.wind.speed * 3.6), // m/s to km/h
         sunrise: formatTime(data.sys.sunrise, data.timezone),
         sunset: formatTime(data.sys.sunset, data.timezone),
-      };
+      });
+
+      return validatedData;
+
     } catch (error: any) {
+       if (error instanceof z.ZodError) {
+        console.error("Weather data validation error:", error.issues);
+        throw new Error("Received invalid weather data format.");
+       }
        if (error.response) {
         console.error('Error fetching weather data. Status:', error.response.status, 'Data:', JSON.stringify(error.response.data, null, 2));
-        throw new Error(`Could not fetch weather data for ${city}: ${error.response.data.message}`);
+        throw new Error(`Could not fetch weather data for ${location}: ${error.response.data.message}`);
        } else if (error.request) {
         console.error('Error fetching weather data: No response received', error.request);
         throw new Error('No response from weather service. Please check network.');
        } else {
         console.error('Error fetching weather data:', error.message);
-        throw new Error(`Could not fetch weather data for ${city}.`);
+        throw new Error(`Could not fetch weather data for ${location}.`);
        }
     }
-  }
-);
+}

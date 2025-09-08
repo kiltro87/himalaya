@@ -1,22 +1,27 @@
 
-'use client';
-
 import { Header } from "@/components/header";
 import { MapPin } from "lucide-react";
-import dynamic from 'next/dynamic';
-import { Skeleton } from "@/components/ui/skeleton";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "@/lib/firebase";
+import { MapsPageClient } from "./maps-page-client"; // Import the new client component
 
-// Dynamically import the MapClient component with SSR turned off.
-// This is crucial for map libraries that interact with the window object.
-const MapClient = dynamic(
-  () => import('@/components/views/map-client'),
-  { 
-    ssr: false,
-    loading: () => <Skeleton className="h-full w-full" /> 
+async function getMapboxApiKey(): Promise<string> {
+  const docRef = doc(db, "secrets", "apiKeys");
+  const docSnap = await getDoc(docRef);
+  if (docSnap.exists()) {
+    const data = docSnap.data();
+    const apiKey = data.mapbox;
+    if (typeof apiKey === 'string' && apiKey.length > 0) {
+      return apiKey;
+    }
   }
-);
+  console.error("Mapbox API key is not configured in Firestore.");
+  return ""; 
+}
 
-export default function MapsPage() {
+export default async function MapsPage() {
+  const mapboxApiKey = await getMapboxApiKey();
+
   return (
     <div className="flex h-screen w-full flex-col">
       <Header 
@@ -25,7 +30,8 @@ export default function MapsPage() {
         subtitle="Navegación Interactiva"
       />
       <main className="flex-1">
-        <MapClient />
+        {/* Use the client component to handle the dynamic map import */}
+        <MapsPageClient mapboxApiKey={mapboxApiKey} />
       </main>
     </div>
   );

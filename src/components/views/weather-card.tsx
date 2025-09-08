@@ -10,17 +10,19 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 interface WeatherCardProps {
   location: string;
+  openWeatherApiKey: string; // API key is now a prop
 }
 
-export function WeatherCard({ location }: WeatherCardProps) {
+export function WeatherCard({ location, openWeatherApiKey }: WeatherCardProps) {
   const [weather, setWeather] = useState<WeatherInfoOutput | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     async function loadWeather() {
-      if (!location) {
+      if (!location || !openWeatherApiKey) { // Check for API key as well
           setLoading(false);
+          setError("API Key no configurada.")
           return;
       };
       
@@ -35,7 +37,6 @@ export function WeatherCard({ location }: WeatherCardProps) {
         if (cachedData) {
           const { data, timestamp } = JSON.parse(cachedData);
           if (now - timestamp < 3600 * 1000) { // 1 hour cache
-            // console.log(`Using cached weather for ${location}`);
             setWeather(data);
             setLoading(false);
             return;
@@ -48,7 +49,6 @@ export function WeatherCard({ location }: WeatherCardProps) {
       // 2. Check for internet connection
       if (typeof navigator !== 'undefined' && !navigator.onLine) {
         setError("Offline. Mostrando últimos datos disponibles.");
-        // We can still use stale cache data if offline
         const cachedData = localStorage.getItem(cacheKey);
         if (cachedData) {
           setWeather(JSON.parse(cachedData).data);
@@ -57,11 +57,8 @@ export function WeatherCard({ location }: WeatherCardProps) {
         return;
       }
       
-      // 3. Fetch from API
-      const result = await fetchWeather(location);
-
-      // Log the result that arrives at the client
-      // console.log(`Weather result for ${location} in client:`, result);
+      // 3. Fetch from API, passing the key to the Server Action
+      const result = await fetchWeather(location, openWeatherApiKey);
 
       if (result.success && result.data) {
         setWeather(result.data);
@@ -73,14 +70,13 @@ export function WeatherCard({ location }: WeatherCardProps) {
         }
       } else {
         setError(result.error as string || "Error");
-        // If the fetch fails, invalidate the cache to avoid showing stale/bad data
         localStorage.removeItem(cacheKey);
       }
       setLoading(false);
     }
 
     loadWeather();
-  }, [location]);
+  }, [location, openWeatherApiKey]); // Add apiKey to dependency array
 
   if (loading) {
     return (
@@ -103,7 +99,7 @@ export function WeatherCard({ location }: WeatherCardProps) {
     );
   }
 
-  if (error && !weather) { // Only show full error if no data is available at all
+  if (error && !weather) { 
     return (
         <Card>
             <CardHeader className="flex-row items-center gap-4 space-y-0 pb-2">
@@ -120,7 +116,7 @@ export function WeatherCard({ location }: WeatherCardProps) {
     );
   }
 
-  if (!weather) return null; // Should not happen if logic is correct
+  if (!weather) return null;
 
   return (
     <Card>

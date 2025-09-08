@@ -5,8 +5,6 @@ import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import { Header } from "@/components/header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { tripConfig } from "@/lib/trip-config";
-import { ItineraryDay } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { Home } from "lucide-react";
 import Image from "next/image";
@@ -16,22 +14,23 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { TodayPlanCard } from "./today-plan-card";
 import { TodayBocadoCard } from "./today-bocado-card";
 import { TodayBudgetCard } from "./today-budget-card";
+import { useTripContext } from "@/app/trip-context"; // Import the context hook
 
 const TodayMapCard = dynamic(() => import('./today-map-card').then(mod => mod.TodayMapCard), {
   loading: () => <Skeleton className="h-full w-full rounded-xl" />,
   ssr: false,
 });
 
-
 interface TodayViewProps {
-  currentDayNumber: number;
+  mapboxApiKey: string;
+  openWeatherApiKey: string;
 }
 
-export function TodayView({ currentDayNumber }: TodayViewProps) {
+export function TodayView({ mapboxApiKey, openWeatherApiKey }: TodayViewProps) {
   const [isClient, setIsClient] = useState(false);
-  const [currentDay, setCurrentDay] = useState<ItineraryDay | null>(null);
   const [subtitle, setSubtitle] = useState("");
   const [imageError, setImageError] = useState(false);
+  const { currentDay } = useTripContext(); // Get the current day from the context
 
   useEffect(() => {
     const today = new Date();
@@ -43,10 +42,9 @@ export function TodayView({ currentDayNumber }: TodayViewProps) {
   }, []);
 
   useEffect(() => {
-    const dayData = tripConfig.itinerary.find(d => d.day === currentDayNumber);
-    setCurrentDay(dayData || null);
+    // When the currentDay from context changes, reset the image error state
     setImageError(false);
-  }, [currentDayNumber]);
+  }, [currentDay]);
 
   if (!isClient || !currentDay) {
     return (
@@ -81,7 +79,6 @@ export function TodayView({ currentDayNumber }: TodayViewProps) {
 
   const isNepal = currentDay.phase === 'nepal';
   const phaseTextClasses = isNepal ? "text-blue-600 dark:text-blue-400" : "text-green-600 dark:text-green-400";
-
 
   return (
     <div className="flex min-h-screen w-full flex-col">
@@ -126,8 +123,12 @@ export function TodayView({ currentDayNumber }: TodayViewProps) {
             </Card>
             
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+                {/* The components now receive the full, updated day object from the context */}
                 <TodayPlanCard currentDay={currentDay} />
-                <WeatherCard location={currentDay.location} />
+                <WeatherCard 
+                    location={currentDay.location} 
+                    openWeatherApiKey={openWeatherApiKey} 
+                />
                 <TodayBocadoCard currentDay={currentDay} />
             </div>
 
@@ -137,7 +138,7 @@ export function TodayView({ currentDayNumber }: TodayViewProps) {
                     <PersonalizedTipsCard currentDay={currentDay} />
                 </div>
                 <div className="md:col-span-1 min-h-[400px]">
-                   <TodayMapCard currentDay={currentDay} />
+                   <TodayMapCard currentDay={currentDay} mapboxApiKey={mapboxApiKey} />
                 </div>
             </div>
         </div>

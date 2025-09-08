@@ -1,22 +1,34 @@
 
-"use client";
-
-import { useState, useEffect } from "react";
 import { getTripDay } from "@/lib/date-utils";
-import { TodayView } from "@/components/views/today-view";
-import { DaySimulator } from "@/components/day-simulator";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "@/lib/firebase";
+import { HomePageClient } from "./home-page-client";
 
-export default function Home() {
-  const [currentDay, setCurrentDay] = useState(getTripDay());
+async function getApiKeys(): Promise<{ mapbox: string; openweather: string; }> {
+  const docRef = doc(db, "secrets", "apiKeys");
+  const docSnap = await getDoc(docRef);
+  if (docSnap.exists()) {
+    const data = docSnap.data();
+    // CORRECTED: Use openWeatherMap to match the rest of the codebase
+    const mapbox = data.mapbox || "";
+    const openweather = data.openWeatherMap || ""; 
+    if (typeof mapbox === 'string' && mapbox.length > 0 && typeof openweather === 'string' && openweather.length > 0) {
+      return { mapbox, openweather };
+    }
+  }
+  console.error("API keys are not configured correctly in Firestore.");
+  return { mapbox: "", openweather: "" };
+}
 
-  const handleDayChange = (day: number) => {
-    setCurrentDay(day);
-  };
-  
+export default async function Home() {
+  const initialDayNumber = getTripDay();
+  const { mapbox: mapboxApiKey, openweather: openWeatherApiKey } = await getApiKeys();
+
   return (
-    <div>
-      <TodayView currentDayNumber={currentDay} />
-      <DaySimulator currentDay={currentDay} onDayChange={handleDayChange} />
-    </div>
+    <HomePageClient 
+      initialDayNumber={initialDayNumber} 
+      mapboxApiKey={mapboxApiKey}
+      openWeatherApiKey={openWeatherApiKey}
+    />
   );
 }

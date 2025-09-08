@@ -6,15 +6,18 @@ import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { tripConfig } from "@/lib/trip-config";
 
-// Set the access token on the mapboxgl object
-mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_API_KEY || "";
+interface MapClientProps {
+  mapboxApiKey: string;
+}
 
-const MapClient = () => {
+const MapClient = ({ mapboxApiKey }: MapClientProps) => {
   const mapContainer = useRef<HTMLDivElement | null>(null);
   const map = useRef<mapboxgl.Map | null>(null);
 
+  mapboxgl.accessToken = mapboxApiKey;
+
   useEffect(() => {
-    if (map.current || !mapContainer.current || !mapboxgl.accessToken) return; // Initialize map only once
+    if (map.current || !mapContainer.current || !mapboxgl.accessToken) return;
 
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
@@ -23,16 +26,15 @@ const MapClient = () => {
       zoom: 6,
     });
 
-    const locations = tripConfig.itinerary
-      .flatMap(day => day.places.map(place => ({ ...place, day: day.day, title: day.title })))
-      .filter(place => place.coords);
+    // Corrected logic: Iterate over each day in the itinerary, not each place.
+    const dailyLocations = tripConfig.itinerary.filter(day => day.coords);
 
-    locations.forEach((loc) => {
-      if (loc.coords) {
-        const [lat, lon] = loc.coords;
+    dailyLocations.forEach((day) => {
+      if (day.coords) {
+        const [lat, lon] = day.coords;
         new mapboxgl.Marker({ color: '#285A98' })
           .setLngLat([lon, lat])
-          .setPopup(new mapboxgl.Popup().setHTML(`<h6>${loc.name}</h6><p>Día ${loc.day}: ${loc.title}</p>`))
+          .setPopup(new mapboxgl.Popup().setHTML(`<h6>Día ${day.day}: ${day.location}</h6><p>${day.title}</p>`))
           .addTo(map.current!);
       }
     });
@@ -43,7 +45,7 @@ const MapClient = () => {
         map.current = null;
       }
     };
-  }, []);
+  }, []); // mapboxApiKey is used before useEffect, so it's not a dependency
 
   return (
     <div ref={mapContainer} className="h-full w-full bg-muted" />
