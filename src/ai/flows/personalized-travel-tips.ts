@@ -62,7 +62,7 @@ const personalizedTravelTipsFlow = ai.defineFlow(
   },
   async input => {
     const llmResponse = await prompt(input);
-    const output = llmResponse?.output();
+    const output = llmResponse?.output?.();
 
     if (!output) {
         const errorText = llmResponse ? llmResponse.text() : 'No response from model.';
