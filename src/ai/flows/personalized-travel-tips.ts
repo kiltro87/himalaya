@@ -1,4 +1,3 @@
-
 'use server';
 
 /**
@@ -6,7 +5,7 @@
  *
  * - personalizedTravelTips - A function that generates personalized travel recommendations.
  * - PersonalizedTravelTipsInput - The input type for the personalizedTravelTips function.
- * - PersonalizedTravelTipsOutput - The return type for the personalizedTravelTips function.
+ * - PersonalizedTravelTipsOutput - The return type for the personalizedTraveltips function.
  */
 
 import {ai} from '@/ai/genkit';
@@ -63,6 +62,14 @@ const personalizedTravelTipsFlow = ai.defineFlow(
   },
   async input => {
     const llmResponse = await prompt(input);
+
+    if (!llmResponse) {
+        console.error("Failed to get a response from the model.");
+        throw new Error(
+          'The AI model returned no response. Please try again.'
+        );
+    }
+
     const output = llmResponse.output();
 
     if (!output) {
