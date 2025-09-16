@@ -17,6 +17,28 @@ const WeatherInfoOutputSchema = z.object({
   sunrise: z.string().describe('The sunrise time in HH:MM format.'),
   sunset: z.string().describe('The sunset time in HH:MM format.'),
 });
+
+const OpenWeatherMapDataSchema = z.object({
+    weather: z.array(z.object({
+      description: z.string(),
+      icon: z.string(),
+    })).min(1),
+    main: z.object({
+      temp: z.number(),
+      feels_like: z.number(),
+      humidity: z.number(),
+    }),
+    wind: z.object({
+      speed: z.number(),
+    }),
+    sys: z.object({
+      sunrise: z.number(),
+      sunset: z.number(),
+    }),
+    timezone: z.number(),
+    name: z.string(),
+  });
+
 export type WeatherInfoOutput = z.infer<typeof WeatherInfoOutputSchema>;
 
 async function getApiKey(): Promise<string> {
@@ -25,7 +47,6 @@ async function getApiKey(): Promise<string> {
 
     if (docSnap.exists()) {
         const data = docSnap.data();
-        // The key in Firestore is named openWeatherMap
         const apiKey = data.openWeatherMap; 
         if (typeof apiKey === 'string' && apiKey.length > 0) {
             return apiKey;
@@ -37,7 +58,6 @@ async function getApiKey(): Promise<string> {
     }
 }
 
-// This is now a regular async function, completely decoupled from Genkit AI.
 export async function getWeatherInfo(location: string): Promise<WeatherInfoOutput> {
     let apiKey;
     try {
@@ -51,7 +71,7 @@ export async function getWeatherInfo(location: string): Promise<WeatherInfoOutpu
     
     try {
       const response = await axios.get(url);
-      const data = response.data;
+      const data = OpenWeatherMapDataSchema.parse(response.data);
 
       const iconMap: { [key: string]: string } = {
         '01d': '☀️', '01n': '🌙',
@@ -70,19 +90,17 @@ export async function getWeatherInfo(location: string): Promise<WeatherInfoOutpu
         return date.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', timeZone: 'UTC' });
       }
 
-      const validatedData = WeatherInfoOutputSchema.parse({
+      return {
         temperature: data.main.temp,
         description: data.weather[0].description,
         icon: iconMap[data.weather[0].icon] || '🌡️',
         location: data.name,
         feelsLike: data.main.feels_like,
         humidity: data.main.humidity,
-        windSpeed: Math.round(data.wind.speed * 3.6), // m/s to km/h
+        windSpeed: Math.round(data.wind.speed * 3.6),
         sunrise: formatTime(data.sys.sunrise, data.timezone),
         sunset: formatTime(data.sys.sunset, data.timezone),
-      });
-
-      return validatedData;
+      };
 
     } catch (error: any) {
        if (error instanceof z.ZodError) {
