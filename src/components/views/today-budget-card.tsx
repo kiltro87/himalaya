@@ -5,14 +5,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { tripConfig } from "@/lib/trip-config";
 import { ItineraryDay } from "@/lib/types";
 import { Wallet } from "lucide-react";
-import { Pie, Cell, ResponsiveContainer } from 'recharts';
+import { Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import { Skeleton } from "../ui/skeleton";
 
 const PieChart = dynamic(() => import('recharts').then(recharts => recharts.PieChart), { ssr: false });
-const Tooltip = dynamic(() => import('recharts').then(recharts => recharts.Tooltip), { ssr: false });
-
 
 interface TodayBudgetCardProps {
     currentDay: ItineraryDay;
