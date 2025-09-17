@@ -6,8 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { SlidersHorizontal } from 'lucide-react';
-// Import types and data from their correct sources
-import { tripConfig, TRIP_ITINERARY } from '@/lib/trip-config'; // CORRECT: Import data directly
+// Import the centralized tripConfig object
+import { tripConfig } from '@/lib/trip-config';
 import { getTripDay } from '@/lib/date-utils';
 import { useTripContext } from '@/app/trip-context'; 
 
@@ -17,7 +17,8 @@ export function DaySimulator() {
 
   const handleDaySelect = (value: string) => {
     const dayNumber = parseInt(value, 10);
-    const newDay = TRIP_ITINERARY.find(d => d.day === dayNumber);
+    // Use tripConfig.itinerary instead of the old TRIP_ITINERARY
+    const newDay = tripConfig.itinerary.find(d => d.day === dayNumber);
     if (newDay) {
       setCurrentDay(newDay);
     }
@@ -25,7 +26,8 @@ export function DaySimulator() {
   
   const handleReset = () => {
     const actualDayNumber = getTripDay();
-    const actualDay = TRIP_ITINERARY.find(d => d.day === actualDayNumber);
+    // Use tripConfig.itinerary instead of the old TRIP_ITINERARY
+    const actualDay = tripConfig.itinerary.find(d => d.day === actualDayNumber);
     if (actualDay) {
         setCurrentDay(actualDay);
     }

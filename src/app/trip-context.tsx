@@ -2,9 +2,9 @@
 "use client";
 
 import React, { createContext, useState, useContext, ReactNode } from 'react';
-// Import types and data from their correct sources
+// Import types and the new tripConfig object
 import { ItineraryDay } from '@/lib/types';
-import { TRIP_ITINERARY } from '@/lib/trip-config'; // CORRECT: Import data directly
+import { tripConfig } from '@/lib/trip-config';
 
 interface TripContextType {
   currentDay: ItineraryDay;
@@ -28,9 +28,16 @@ interface TripProviderProps {
 
 export const TripProvider: React.FC<TripProviderProps> = ({ children, initialDayNumber }) => {
   const findDayByNumber = (dayNumber: number): ItineraryDay => {
-    // This check is now safe because TRIP_ITINERARY is imported directly
-    const adjustedDayNumber = Math.max(1, Math.min(dayNumber, TRIP_ITINERARY.length));
-    return TRIP_ITINERARY[adjustedDayNumber - 1];
+    // Use the itinerary from the imported tripConfig object
+    const itinerary = tripConfig.itinerary;
+    const adjustedDayNumber = Math.max(1, Math.min(dayNumber, itinerary.length));
+    const day = itinerary.find(d => d.day === adjustedDayNumber);
+    if (!day) {
+        // As a fallback, return the first day if no match is found.
+        // This should not happen with adjustedDayNumber, but it's a safe fallback.
+        return itinerary[0];
+    }
+    return day;
   };
 
   const [currentDay, setCurrentDay] = useState<ItineraryDay>(() => findDayByNumber(initialDayNumber));
