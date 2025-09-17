@@ -8,13 +8,11 @@ import { TripProvider } from "./trip-context";
 interface HomePageClientProps {
   initialDayNumber: number;
   mapboxApiKey: string;
-  openWeatherApiKey: string;
 }
 
 export function HomePageClient({ 
   initialDayNumber, 
-  mapboxApiKey, 
-  openWeatherApiKey 
+  mapboxApiKey
 }: HomePageClientProps) {
 
   // The TripProvider will now manage the state of the current day.
@@ -24,8 +22,7 @@ export function HomePageClient({
       <div>
         {/* TodayView will get the current day from the context */}
         <TodayView 
-          mapboxApiKey={mapboxApiKey} 
-          openWeatherApiKey={openWeatherApiKey}
+          mapboxApiKey={mapboxApiKey}
         />
         {/* DaySimulator will get and set the current day from the context */}
         <DaySimulator />

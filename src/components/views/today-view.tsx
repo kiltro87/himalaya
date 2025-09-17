@@ -22,10 +22,9 @@ const TodayMapCard = dynamic(() => import('./today-map-card').then(mod => mod.To
 
 interface TodayViewProps {
   mapboxApiKey: string;
-  openWeatherApiKey: string;
 }
 
-export function TodayView({ mapboxApiKey, openWeatherApiKey }: TodayViewProps) {
+export function TodayView({ mapboxApiKey }: TodayViewProps) {
   const [isClient, setIsClient] = useState(false);
   const [subtitle, setSubtitle] = useState("");
   const [imageError, setImageError] = useState(false);
@@ -126,7 +125,6 @@ export function TodayView({ mapboxApiKey, openWeatherApiKey }: TodayViewProps) {
                 <TodayPlanCard currentDay={currentDay} />
                 <WeatherCard 
                     location={currentDay.location} 
-                    openWeatherApiKey={openWeatherApiKey} 
                 />
                 <TodayBocadoCard currentDay={currentDay} />
             </div>

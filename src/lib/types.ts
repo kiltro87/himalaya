@@ -145,6 +145,7 @@ export interface TripConfig {
       currency: string;
       destinations: string[];
       year: number;
+      image: string;
   };
   itinerary: ItineraryDay[];
   budget: BudgetConfig;

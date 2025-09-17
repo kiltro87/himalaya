@@ -10,19 +10,18 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 interface WeatherCardProps {
   location: string;
-  openWeatherApiKey: string; // API key is now a prop
 }
 
-export function WeatherCard({ location, openWeatherApiKey }: WeatherCardProps) {
+export function WeatherCard({ location }: WeatherCardProps) {
   const [weather, setWeather] = useState<WeatherInfoOutput | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     async function loadWeather() {
-      if (!location || !openWeatherApiKey) { // Check for API key as well
+      if (!location) { 
           setLoading(false);
-          setError("API Key no configurada.")
+          setError("Location not provided.")
           return;
       };
       
@@ -57,8 +56,8 @@ export function WeatherCard({ location, openWeatherApiKey }: WeatherCardProps) {
         return;
       }
       
-      // 3. Fetch from API, passing the key to the Server Action
-      const result = await fetchWeather(location, openWeatherApiKey);
+      // 3. Fetch from API
+      const result = await fetchWeather(location);
 
       if (result.success && result.data) {
         setWeather(result.data);
@@ -76,7 +75,7 @@ export function WeatherCard({ location, openWeatherApiKey }: WeatherCardProps) {
     }
 
     loadWeather();
-  }, [location, openWeatherApiKey]); // Add apiKey to dependency array
+  }, [location]);
 
   if (loading) {
     return (

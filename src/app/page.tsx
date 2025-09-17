@@ -22,13 +22,12 @@ async function getApiKeys(): Promise<{ mapbox: string; openweather: string; }> {
 
 export default async function Home() {
   const initialDayNumber = getTripDay();
-  const { mapbox: mapboxApiKey, openweather: openWeatherApiKey } = await getApiKeys();
+  const { mapbox: mapboxApiKey } = await getApiKeys();
 
   return (
     <HomePageClient 
       initialDayNumber={initialDayNumber} 
       mapboxApiKey={mapboxApiKey}
-      openWeatherApiKey={openWeatherApiKey}
     />
   );
 }
