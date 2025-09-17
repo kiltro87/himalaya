@@ -93,9 +93,9 @@ export function ItineraryDetailModal({ day, onClose }: ItineraryDetailModalProps
                 </h3>
                 <div className="rounded-lg border bg-muted/50 p-3">
                     <p className="font-bold">
-                        {typeof day.accommodation === 'string'
-                            ? day.accommodation
-                            : day.accommodation.name}
+                        {typeof day.accommodation === 'object' && day.accommodation.name
+                            ? day.accommodation.name
+                            : typeof day.accommodation === 'string' ? day.accommodation : 'Alojamiento no especificado'}
                     </p>
                 </div>
               </div>

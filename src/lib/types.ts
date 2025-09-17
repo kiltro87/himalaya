@@ -23,6 +23,7 @@ export interface ItineraryDay {
   bocado: string;
   accommodation: string | Accommodation;
   coords?: [number, number];
+  zoom?: number;
 }
 
 export interface Expense {
