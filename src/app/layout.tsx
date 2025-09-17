@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from "@/components/theme-provider";
 import { BottomNav } from "@/components/bottom-nav";
 import { cn } from "@/lib/utils";
+import { TripProvider } from "@/app/trip-context"; // Import the TripProvider
 import "./globals.css";
 
 const fontSans = PT_Sans({
@@ -52,10 +53,12 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <div className="relative min-h-dvh">
-            <main>{children}</main>
-            <BottomNav />
-          </div>
+          <TripProvider initialDayNumber={1}> {/* Wrap with TripProvider */}
+            <div className="relative min-h-dvh">
+              <main>{children}</main>
+              <BottomNav />
+            </div>
+          </TripProvider>
           <Toaster />
         </ThemeProvider>
       </body>

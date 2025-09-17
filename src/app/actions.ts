@@ -1,44 +1,8 @@
 
 "use server";
 
-import {
-  personalizedTravelTips,
-  type PersonalizedTravelTipsInput,
-} from "@/ai/flows/personalized-travel-tips";
 import { getWeatherInfo } from "@/ai/flows/weather-flow";
 import { z } from "zod";
-
-const personalizedTipsSchema = z.object({
-  itineraryDay: z
-    .string()
-    .min(10, {
-      message: "Please provide more details about your itinerary for the day.",
-    }),
-  userPreferences: z
-    .string()
-    .min(10, { message: "Please tell us more about your preferences." }),
-});
-
-export async function getPersonalizedTips(data: PersonalizedTravelTipsInput) {
-  const parsed = personalizedTipsSchema.safeParse(data);
-  if (!parsed.success) {
-    return { success: false, error: parsed.error.flatten() };
-  }
-  try {
-    const output = await personalizedTravelTips(parsed.data);
-    return { success: true, data: output };
-  } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred. Please try again.";
-    console.error(error);
-    return {
-      success: false,
-      error: {
-        formErrors: [errorMessage],
-        fieldErrors: {},
-      },
-    };
-  }
-}
 
 const weatherSchema = z.string().min(1, { message: "Location is required." });
 

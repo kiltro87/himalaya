@@ -8,7 +8,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { Home } from "lucide-react";
 import Image from "next/image";
-import { PersonalizedTipsCard } from "./personalized-tips-card";
 import { WeatherCard } from "./weather-card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TodayPlanCard } from "./today-plan-card";
@@ -135,7 +134,6 @@ export function TodayView({ mapboxApiKey, openWeatherApiKey }: TodayViewProps) {
             <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
                 <div className="md:col-span-2 space-y-6">
                     <TodayBudgetCard currentDay={currentDay} />
-                    <PersonalizedTipsCard currentDay={currentDay} />
                 </div>
                 <div className="md:col-span-1 min-h-[400px]">
                    <TodayMapCard currentDay={currentDay} mapboxApiKey={mapboxApiKey} />
