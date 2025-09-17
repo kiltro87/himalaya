@@ -775,4 +775,4 @@ export const itinerary = [
       timezone: "Nepal: UTC+5:45 | Bután: UTC+6:00"
     }
   }
-};
+];
